@@ -22,6 +22,7 @@ func RegisterHeaderRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, regist
 		if userRecord == nil {
 			return c.File("views/components/header/login.html")
 		}
+		app.Logger().Debug("Found user, displaying info")
 
 		var user *models.Record = userRecord.(*models.Record)
 		name := user.Username()
@@ -32,7 +33,6 @@ func RegisterHeaderRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, regist
 			"name": name,
 		})
 		if err != nil {
-			// or redirect to a dedicated 404 HTML page
 			return apis.NewNotFoundError("", err)
 		}
 

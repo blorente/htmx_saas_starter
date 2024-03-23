@@ -9,6 +9,7 @@ import (
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/models"
+	"github.com/pocketbase/pocketbase/tools/template"
 
 	"github.com/blorente/htmx_saas_starter/lib"
 	"github.com/blorente/htmx_saas_starter/middleware"
@@ -24,7 +25,7 @@ func getUserRecord(c echo.Context) (*models.Record, error) {
 }
 
 // RegisterAuthRoutes registers the route group '/auth', which handles authentication.
-func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent) {
+func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
 
 	authGroup.GET("/login", func(c echo.Context) error {
@@ -34,7 +35,11 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent) {
 			app.Logger().Debug("User found. Redirecting")
 			return c.Redirect(302, "/")
 		}
-		return c.File("views/components/login_form.html")
+		html, err := registry.LoadFiles(
+			"views/layout.html",
+			"views/pages/login.html",
+		).Render(nil)
+		return c.HTML(http.StatusOK, html)
 	})
 
 	authGroup.POST("/login", func(c echo.Context) error {

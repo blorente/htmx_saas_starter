@@ -1,11 +1,27 @@
-<div class="flex flex-row items-center gap-4">
-  <div class="avatar placeholder">
-    <div class="bg-neutral text-neutral-content rounded-full ring w-12">
-      <span class="text-xl">??</span>
+<div class="dropdown dropdown-end">
+  <div tabindex="0" role="button" class="flex items-center gap-6">
+    <div class="btn btn-ghost btn-circle avatar ring ring-primary">
+      <div class="w-10 rounded-full">
+        <span class="text-xl  text-neutral-content">??</span>
+      </div>
     </div>
+    <p class="font-bold hover:bg-base-100">
+      {{.name}}
+    </p>
   </div>
-  <nav class="link link-hover font-bold">{{.name}}</nav>
-  <form action="/auth/logout" method="post">
-    <button name="logout" class="button">Logout</button>
-  </form>
+  <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+    <li>
+    </li>
+    <li>
+      <a class="justify-between">
+        Profile
+      </a>
+    </li>
+    <li><a>Settings</a></li>
+    <li>
+      <form action="/auth/logout" method="post">
+        <button name="logout" class="button">Logout</button>
+      </form>
+    </li>
+  </ul>
 </div>

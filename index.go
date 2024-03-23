@@ -23,9 +23,7 @@ func main() {
 
 		// Static HTML
 		e.Router.Static("/*", "public")
-		e.Router.File("/components/sidebar", "views/components/layout/sidebar.html")
 		e.Router.File("/components/header", "views/components/layout/header.html")
-		e.Router.File("/components/dashboard", "views/components/layout/dashboard.html")
 		e.Router.GET("/", func(c echo.Context) error {
 			return c.Redirect(302, "/landing")
 		})
@@ -42,7 +40,7 @@ func main() {
 			return c.HTML(http.StatusOK, html)
 		})
 
-		routes.RegisterAuthRoutes(app, e)
+		routes.RegisterAuthRoutes(app, e, registry)
 		routes.RegisterAppRoutes(app, e)
 		routes.RegisterHeaderRoutes(app, e, registry)
 		return nil
