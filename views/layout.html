@@ -8,11 +8,14 @@
 </head>
 
 <body>
-  <div id="header" hx-get="/components/header" hx-trigger="load" class="w-full"></div>
+  <header id="header" hx-get="/components/header" hx-trigger="load" class="w-full" hx-swap="outerHTML">
+    This is a stub, will be replaced by htmx when it's done loading the header.
+  </header>
   <section id="body" class="flex">
     {{block "body" .}}
     <p>This body is empty</p>
     {{end}}
   </section>
 </body>
+
 </html>
