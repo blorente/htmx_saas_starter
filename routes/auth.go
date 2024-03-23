@@ -32,9 +32,9 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent) {
 		_, err := getUserRecord(c)
 		if err == nil {
 			app.Logger().Debug("User found. Redirecting")
-			return c.Redirect(302, "/app/profile")
+			return c.Redirect(302, "/")
 		}
-		return c.File("public/components/login_form.html")
+		return c.File("views/components/login_form.html")
 	})
 
 	authGroup.POST("/login", func(c echo.Context) error {
@@ -54,7 +54,7 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent) {
 			Secure:   true,
 			HttpOnly: true,
 		})
-		return c.Redirect(302, "/app/profile")
+		return c.Redirect(302, "/")
 	})
 
 	authGroup.POST("/logout", func(c echo.Context) error {
@@ -67,6 +67,6 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent) {
 			HttpOnly: true,
 			MaxAge:   -1,
 		})
-		return c.Redirect(302, "/login")
+		return c.Redirect(302, "/")
 	})
 }
