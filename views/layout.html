@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html data-theme="cupcake">
+
+<head>
+  <title>{{block "title" . }}Super Awesome App{{end}}</title>
+  <link href="/styles.css" rel="stylesheet" />
+  <script src="https://unpkg.com/htmx.org"></script>
+</head>
+
+<body>
+  <div id="header" hx-get="/components/header" hx-trigger="load" class="w-full"></div>
+  <section id="body" class="flex">
+    {{block "body" .}}
+    <p>This body is empty</p>
+    {{end}}
+  </section>
+</body>
+</html>

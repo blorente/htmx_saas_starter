@@ -1,0 +1,10 @@
+{{define "title"}}
+Landing Page
+{{end}}
+
+{{define "body"}}
+<div id="sidebar" hx-get="/components/sidebar" hx-trigger="load" class="w-full md:w-1/4"></div>
+<div id="dashboard" hx-get="/components/dashboard" hx-trigger="load" class="w-full md:w-3/4"></div>
+<button class="btn btn-primary">Button</button>
+<div hx-get="/hello" hx-trigger="load"></div>
+{{end}}

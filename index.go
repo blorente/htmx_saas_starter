@@ -6,7 +6,9 @@ import (
 
 	echo "github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
+	"github.com/pocketbase/pocketbase/tools/template"
 
 	"github.com/blorente/htmx_saas_starter/routes"
 )
@@ -17,12 +19,27 @@ func main() {
 	// serves static files from the provided public dir (if exists)
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 
+		registry := template.NewRegistry()
+
 		// Static HTML
-		e.Router.File("/components/sidebar", "public/components/layout/sidebar.html")
-		e.Router.File("/components/header", "public/components/layout/header.html")
-		e.Router.File("/components/dashboard", "public/components/layout/dashboard.html")
+		e.Router.Static("/*", "public")
+		e.Router.File("/components/sidebar", "views/components/layout/sidebar.html")
+		e.Router.File("/components/header", "views/components/layout/header.html")
+		e.Router.File("/components/dashboard", "views/components/layout/dashboard.html")
 		e.Router.GET("/hello", func(c echo.Context) error {
 			return c.HTML(http.StatusOK, "<h1>HsdrELLOsdfsdf</h1>")
+		})
+
+		e.Router.GET("/landing", func(c echo.Context) error {
+			html, err := registry.LoadFiles(
+				"views/layout.html",
+				"views/pages/landing.html",
+			).Render(nil)
+
+			if err != nil {
+				return apis.NewNotFoundError("", err)
+			}
+			return c.HTML(http.StatusOK, html)
 		})
 
 		routes.RegisterAuthRoutes(app, e)
