@@ -1,6 +1,6 @@
-module github.com/claidler/fullstack-go-template
+module github.com/blorente/htmx_saas_starter
 
-go 1.21.1
+go 1.22
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
