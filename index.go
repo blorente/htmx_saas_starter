@@ -3,29 +3,32 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+
+	echo "github.com/labstack/echo/v5"
+	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
+	"github.com/pocketbase/pocketbase/core"
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("public"))
-	http.Handle("/api/styles/", http.StripPrefix("/api/styles/", http.FileServer(http.Dir("public"))))
+	app := pocketbase.New()
 
-	http.Handle("/api/sidebar", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "public/components/layout/sidebar.html")
-	}))
+	// serves static files from the provided public dir (if exists)
+	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+		e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("public"), true))
+		// e.Router.GET("/api/styles", apis.StaticDirectoryHandler(os.DirFS("public"), false))
+		// e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("public"), false))
+		e.Router.File("/components/sidebar", "public/components/layout/sidebar.html")
+		e.Router.File("/components/header", "public/components/layout/header.html")
+		e.Router.File("/components/dashboard", "public/components/layout/dashboard.html")
+		e.Router.GET("/hello", func(c echo.Context) error {
+			return c.HTML(http.StatusOK, "<h1>HsdrELLOsdfsdf </h1>")
+		})
+		return nil
+	})
 
-	http.Handle("/api/header", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "public/components/layout/header.html")
-	}))
-
-	http.Handle("/api/dashboard", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "public/components/layout/dashboard.html")
-	}))
-
-	http.Handle("/", fs)
-
-	log.Println("Listening on :3000...")
-	err := http.ListenAndServe(":3000", nil)
-	if err != nil {
+	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,13 +1,19 @@
-air -c ./.air.toml & \
-npx tailwind \
+air -c air.toml &
+
+AIR_PID=$!
+
+cleanup() {
+    kill -2 $AIR_PID || true
+    main_pid=$(lsof -i tcp:9999 | tail -n 1 | awk '{print $2}')
+    kill -2 "${main_pid}" || true
+    exit 0
+}
+
+trap cleanup EXIT SIGINT SIGTERM
+
+npx tailwindcss \
   -i 'styles.css' \
   -o 'public/styles.css' \
-  --watch & \
-browser-sync start \
-  --files 'public/**/*.html, public/**/*.css' \
-  --port 3001 \
-  --proxy 'localhost:3000' \
-  --middleware 'function(req, res, next) { \
-    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); \
-    return next(); \
-  }'
+  --watch &
+
+wait $AIR_PID
