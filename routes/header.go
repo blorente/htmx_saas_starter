@@ -35,14 +35,10 @@ func RegisterHeaderRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, regist
 			props["name"] = user.Username()
 		}
 		avatar, err := lib.GetFileUrl(user, "avatar")
-		app.Logger().Debug("BL: Got avatar", avatar)
 		if err == nil {
-			// BL: THis should be an Error
-			app.Logger().Debug("Failed to get url for avatar", err)
 			props["avatar"] = avatar
 		}
 
-		app.Logger().Debug("BL: Rendering user info with props", props)
 		html, err := registry.LoadFiles(
 			"views/components/header/user_info.html",
 		).Render(props)

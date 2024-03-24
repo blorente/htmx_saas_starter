@@ -2069,6 +2069,10 @@ html {
   width: 13rem;
 }
 
+.w-96 {
+  width: 24rem;
+}
+
 .max-w-7xl {
   max-width: 80rem;
 }
@@ -2278,6 +2282,14 @@ html {
 
   .md\:w-3\/4 {
     width: 75%;
+  }
+
+  .md\:w-96 {
+    width: 24rem;
+  }
+
+  .md\:w-auto {
+    width: auto;
   }
 
   .md\:gap-12 {

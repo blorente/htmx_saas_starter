@@ -18,6 +18,7 @@
 
       await pb.collection('users').update(authData.record.id, formData);
     }
+    location.reload()
   }
 </script>
 <button class="btn" hx-on:click="loginWithProvider()">Log in with {{.provider}}</button>
