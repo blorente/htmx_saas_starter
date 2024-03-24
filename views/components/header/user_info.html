@@ -2,7 +2,11 @@
   <div tabindex="0" role="button" class="flex items-center gap-6">
     <div class="btn btn-ghost btn-circle avatar ring ring-primary">
       <div class="w-10 rounded-full">
+        {{if .avatar}}
+        <img alt="Profile picture" src="{{.avatar}}" />
+        {{else}}
         <span class="text-xl  text-neutral-content">??</span>
+        {{end}}
       </div>
     </div>
     <p class="font-bold hover:bg-base-100">
