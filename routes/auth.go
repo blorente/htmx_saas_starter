@@ -24,6 +24,20 @@ func getUserRecord(c echo.Context) (*models.Record, error) {
 	return userRecord, nil
 }
 
+type AuthProvider struct {
+	Name        string
+	DisplayName string
+	LogoRoute   string
+}
+
+var AuthProviders = map[string]AuthProvider{
+	"google": AuthProvider{
+		Name:        "google",
+		DisplayName: "Google",
+		LogoRoute:   "/img/google_auth/round_dark.svg",
+	},
+}
+
 // RegisterAuthRoutes registers the route group '/auth', which handles authentication.
 func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
@@ -51,9 +65,7 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		provider := c.PathParams().Get("provider", "google")
 		html, err := registry.LoadFiles(
 			"views/components/oauth/login_with_provider.html",
-		).Render(map[string]any{
-			"provider": provider,
-		})
+		).Render(AuthProviders[provider])
 		if err != nil {
 			app.Logger().Error("Error rendering template", err)
 			return apis.NewNotFoundError("", err)
