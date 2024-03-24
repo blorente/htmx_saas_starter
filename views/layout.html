@@ -5,6 +5,12 @@
   <title>{{block "title" . }}Super Awesome App{{end}}</title>
   <link href="/styles.css" rel="stylesheet" />
   <script src="https://unpkg.com/htmx.org"></script>
+  {{if .needs_pocketbase}}
+  <script src="/js/pocketbase.umd.js"></script>
+  <script type="text/javascript">
+    const pb = new PocketBase("http://localhost:9999");
+  </script>
+  {{end}}
 </head>
 
 <body>

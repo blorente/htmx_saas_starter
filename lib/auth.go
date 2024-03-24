@@ -9,7 +9,7 @@ import (
 	"github.com/pocketbase/pocketbase/tokens"
 )
 
-func Login(e *core.ServeEvent, username string, password string) (*string, error) {
+func LoginWithUsernameAndPassword(e *core.ServeEvent, username string, password string) (*string, error) {
 	user, err := e.App.Dao().FindAuthRecordByUsername("users", username)
 	if err != nil {
 		return nil, fmt.Errorf("Login failed")

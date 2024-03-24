@@ -1,0 +1,10 @@
+<script type="text/javascript">
+  async function loginWithProvider() {
+    const authData = await pb.collection('users').authWithOAuth2({provider: '{{.provider}}'});
+
+    console.log(pb.authStore.isValid);
+    console.log(pb.authStore.token);
+    console.log(pb.authStore.model.id);
+  }
+</script>
+<button class="btn" hx-on:click="loginWithProvider()">Log in with {{.provider}}</button>

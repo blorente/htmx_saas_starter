@@ -46,6 +46,8 @@ func main() {
 		return nil
 	})
 
+	app.OnRecordAuthRequest().Add(routes.AuthRequestCallback)
+
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}

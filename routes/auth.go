@@ -29,7 +29,6 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
 
 	authGroup.GET("/login", func(c echo.Context) error {
-		app.Logger().Debug("GET Logging in")
 		_, err := getUserRecord(c)
 		if err == nil {
 			app.Logger().Debug("User found. Redirecting")
@@ -38,7 +37,27 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		html, err := registry.LoadFiles(
 			"views/layout.html",
 			"views/pages/login.html",
-		).Render(nil)
+		).Render(map[string]any{
+			"needs_pocketbase": true,
+		})
+		if err != nil {
+			app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
+			return apis.NewNotFoundError("Error rendering template", err)
+		}
+		return c.HTML(http.StatusOK, html)
+	})
+
+	authGroup.GET("/oauth-login/:provider", func(c echo.Context) error {
+		provider := c.PathParams().Get("provider", "google")
+		html, err := registry.LoadFiles(
+			"views/components/oauth/login_with_provider.html",
+		).Render(map[string]any{
+			"provider": provider,
+		})
+		if err != nil {
+			app.Logger().Error("Error rendering template", err)
+			return apis.NewNotFoundError("", err)
+		}
 		return c.HTML(http.StatusOK, html)
 	})
 
@@ -47,7 +66,7 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		password := c.FormValue("password")
 		app.Logger().Debug("Logging in: ", username)
 		// TODO Actually log the user in, this just assumes it's in the DB
-		token, err := lib.Login(e, username, password)
+		token, err := lib.LoginWithUsernameAndPassword(e, username, password)
 		if err != nil {
 			app.Logger().Debug(fmt.Sprintf("Error logging in %s", err))
 			c.Redirect(302, "/auth/login")
@@ -74,4 +93,17 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		})
 		return c.Redirect(302, "/")
 	})
+}
+
+// AuthRequestCallback will fire for every auth collection request.
+// Here is where we'll set the cookie for oath authentication.
+func AuthRequestCallback(e *core.RecordAuthEvent) error {
+	e.HttpContext.SetCookie(&http.Cookie{
+		Name:     middleware.AuthCookieName,
+		Value:    e.Token,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	})
+	return nil
 }

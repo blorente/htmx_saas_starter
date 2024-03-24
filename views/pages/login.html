@@ -28,6 +28,10 @@ Landing Page
         </div>
         <button class="btn w-full">Submit</button>
       </form>
+
+      <div class="grid">
+        <div hx-trigger="load" hx-get="/auth/oauth-login/google" hx-swap="outerHTML" />
+      </div>
     </div>
   </div>
 </div>
