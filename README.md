@@ -1,42 +1,47 @@
-# Fullstack Go HTMX App with Tailwind
+# Starter SaaS Template with Go, HTMX, Pocketbase and Tailwind
 
-This application is a fullstack Go application with HTMX and Tailwind CSS.
-There is `hot-reloading` for changes between html and style changes.
-The Go server files are built into a single distributable file located in `/tmp/main`. The HTML and CSS files are built to `./public/**/*`.
+Features:
 
-## Prerequisites
+- [ ] HTMX, Tailwind, daisyUI for hte frontend.
+- [ ] Pocketbase backend
+- [ ] Authentication with OAuth2: Google
+- [ ] Authentication with username/password
+- [ ] Header
 
-Before you begin, ensure you have installed the following:
+## Structure
 
-- Go
-- Air
-- Browser-sync
-- TailwindCSS
-
-## Installation
-
-Follow the steps below to install the necessary tools:
-
-1. Install Go: Follow the instructions on the [official Go website](https://golang.org/doc/install) to install Go on your machine.
-
-2. Install Air: Air is a live-reloading command line utility for Go applications in development. Install it using the following command:
-
-```bash
-curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s
+```
+❯ tree . -L 1
+.
+├── air.toml            // Air config, for file watching
+├── dev.sh              // Start dev server
+├── index.go            // Main entry point of the application
+├── lib                 // Utility go code.
+├── middleware          // Middleware for common routes (e.g. authentication)
+├── public              // Static public files that should be accessible by raw path.
+├── routes              // Backend routes for components and pages. Organized by groups.
+├── styles.css          // Custom styles to merge into the tailwind-generated css file
+├── tailwind.config.js // Tailwind config and plugins
+└── views
 ```
 
-3. Install NPM deps:
 
-```bash
+## How to use
+
+### Installation
+
+```
 npm install
 ```
 
-## Running the Application
+### OAuth2
 
-After installing all the prerequisites and setting up the environment, you can start the application by running the `dev.sh` script. Use the following command in your terminal:
+- Create a clientID and clientSecret from the OAuth2 provider (e.g. [Google](https://developers.google.com/identity/protocols/oauth2)) .
+- Configure the OAuth2 authentication in PocketBase ([link](https://pocketbase.io/docs/authentication#oauth2-integration)).
+- Create an `AuthProvider` entry in `routes/auth.go`.
+- Add a button in `views/pages/login.html` to htmx the route to the new auth provider.
 
-```bash
-./dev.sh
-```
 
-This will start the application. You should now be able to access it in your web browser at `http://localhost:3001` with hot reloading on code changes enabled.
+### Deployment
+
+- For now, just replace all the `localhost` you see with the actual domain, please.
