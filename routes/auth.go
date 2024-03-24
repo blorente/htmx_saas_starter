@@ -42,6 +42,25 @@ var AuthProviders = map[string]AuthProvider{
 func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
 
+	authGroup.GET("/register", func(c echo.Context) error {
+		_, err := getUserRecord(c)
+		if err == nil {
+			app.Logger().Debug("User found. Redirecting")
+			return c.Redirect(302, "/")
+		}
+		html, err := registry.LoadFiles(
+			"views/layout.html",
+			"views/pages/register.html",
+		).Render(map[string]any{
+			"needs_pocketbase": true,
+		})
+		if err != nil {
+			app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
+			return apis.NewNotFoundError("Error rendering template", err)
+		}
+		return c.HTML(http.StatusOK, html)
+	})
+
 	authGroup.GET("/login", func(c echo.Context) error {
 		_, err := getUserRecord(c)
 		if err == nil {
@@ -73,6 +92,36 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		return c.HTML(http.StatusOK, html)
 	})
 
+	authGroup.POST("/register", func(c echo.Context) error {
+		request := lib.NewRegisterUserRequestFromContext(c)
+		err := request.Validate(app)
+		if err != nil {
+			return c.Redirect(302, "/auth/register")
+		}
+		_, err = lib.RegisterNewUser(app, &request)
+		if err != nil {
+			// TODO BL: Do better with error messages
+			// Look at https://htmx.org/examples/inline-validation/
+			c.Redirect(302, "/auth/register")
+		}
+
+		token, err := lib.LoginWithUsernameAndPassword(e, request.Username, request.Password)
+		if err != nil {
+			// TODO BL: Do better with error messages
+			// Look at https://htmx.org/examples/inline-validation/
+
+			app.Logger().Debug("BL: Error during registration, ", err)
+			c.Redirect(302, "/auth/register")
+		}
+		c.SetCookie(&http.Cookie{
+			Name:     middleware.AuthCookieName,
+			Value:    *token,
+			Path:     "/",
+			Secure:   true,
+			HttpOnly: true,
+		})
+		return c.Redirect(302, "/")
+	})
 	authGroup.POST("/login", func(c echo.Context) error {
 		username := c.FormValue("username")
 		password := c.FormValue("password")

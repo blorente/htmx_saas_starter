@@ -1,31 +1,21 @@
-<div class="dropdown dropdown-end">
-  <div tabindex="0" role="button" class="flex items-center gap-6">
-    <div class="btn btn-ghost btn-circle avatar ring ring-primary">
-      <div class="w-10 rounded-full">
-        {{if .avatar}}
-        <img alt="Profile picture" src="{{.avatar}}" />
-        {{else}}
-        <span class="text-xl  text-neutral-content">??</span>
-        {{end}}
-      </div>
+<div tabindex="0" role="button" class="flex flex-row-reverse items-center gap-6">
+  <div class="btn btn-ghost btn-circle avatar ring hover:ring-primary">
+    <div class="w-10 rounded-full">
+      {{if .avatar}}
+      <img alt="Profile picture" src="{{.avatar}}" />
+      {{else}}
+      <span class="text-xl  text-neutral-content">??</span>
+      {{end}}
     </div>
-    <p class="font-bold hover:bg-base-100">
-      {{.name}}
-    </p>
   </div>
-  <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-    <li>
-    </li>
-    <li>
-      <a class="justify-between">
-        Profile
-      </a>
-    </li>
-    <li><a>Settings</a></li>
-    <li>
-      <form action="/auth/logout" method="post">
-        <button name="logout" class="button">Logout</button>
-      </form>
-    </li>
-  </ul>
+  <div class="grid">
+    <a href="/app/profile" class="hover:link hover:bg-base-200">
+      Welcome, <span class="font-bold">
+        {{.name}}
+      </span>
+    </a>
+    <form class="flex justify-end" action="/auth/logout" method="post">
+      <button name="logout" class=" btn-xs btn-ghost">Logout</button>
+    </form>
+  </div>
 </div>
