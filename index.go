@@ -41,6 +41,7 @@ func main() {
 		})
 
 		routes.RegisterAuthRoutes(app, e, registry)
+		routes.RegisterRegistrationRoutes(app, e, registry)
 		routes.RegisterAppRoutes(app, e)
 		routes.RegisterHeaderRoutes(app, e, registry)
 		return nil
