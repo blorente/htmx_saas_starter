@@ -51,6 +51,7 @@ func NewRegisterUserRequestFromContext(c echo.Context) RegisterNewUserRequest {
 }
 
 func (r *RegisterNewUserRequest) Validate(app *pocketbase.PocketBase) error {
+
 	app.Logger().Debug(fmt.Sprintf("BL: Validating request %v", r))
 	if r.Password != r.RetypePassword {
 		return fmt.Errorf("Passwords do not match")
@@ -82,7 +83,7 @@ func RegisterNewUser(app *pocketbase.PocketBase, req *RegisterNewUserRequest) (*
 		return nil, err
 	}
 
-	err = newUserRecord.SetEmail(req.Username)
+	err = newUserRecord.SetEmail(req.Email)
 	if err != nil {
 		return nil, err
 	}

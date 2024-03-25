@@ -37,28 +37,36 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 		return c.HTML(http.StatusOK, html)
 	})
 
-	// group.POST("/validate", func(c ec)
+	group.GET("/form", func(c echo.Context) error {
+		html, err := renderFormTemplate(nil, registry)
+		if err != nil {
+			return err
+		}
+		return c.HTML(http.StatusOK, html)
+	})
 
 	group.POST("/register", func(c echo.Context) error {
 		request := lib.NewRegisterUserRequestFromContext(c)
 		err := request.Validate(app)
 		if err != nil {
-			return c.Redirect(302, "/registration/register")
+			html, err := renderFormTemplate(&err, registry)
+			if err != nil {
+				return err
+			}
+			return c.HTML(http.StatusOK, html)
 		}
 		_, err = lib.RegisterNewUser(app, &request)
 		if err != nil {
-			// TODO BL: Do better with error messages
-			// Look at https://htmx.org/examples/inline-validation/
-			c.Redirect(302, "/registration/register")
+			html, err := renderFormTemplate(&err, registry)
+			if err != nil {
+				return err
+			}
+			return c.HTML(http.StatusOK, html)
 		}
 
 		token, err := lib.LoginWithUsernameAndPassword(e, request.Username, request.Password)
 		if err != nil {
-			// TODO BL: Do better with error messages
-			// Look at https://htmx.org/examples/inline-validation/
-
-			app.Logger().Debug("BL: Error during registration, ", err)
-			c.Redirect(302, "/registration/register")
+			return c.Redirect(302, "/")
 		}
 		c.SetCookie(&http.Cookie{
 			Name:     middleware.AuthCookieName,
@@ -69,4 +77,19 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 		})
 		return c.Redirect(302, "/")
 	})
+}
+
+func renderFormTemplate(inErr *error, registry *template.Registry) (string, error) {
+	props := make(map[string]any)
+
+	if inErr != nil {
+		props["error"] = fmt.Sprintf("%s", *inErr)
+	}
+	html, err := registry.LoadFiles(
+		"views/components/registration/form.html",
+	).Render(props)
+	if err != nil {
+		return "", apis.NewNotFoundError("Error rendering template", err)
+	}
+	return html, err
 }
