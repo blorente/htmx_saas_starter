@@ -7,7 +7,6 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/template"
 
 	"github.com/blorente/htmx_saas_starter/lib"
@@ -19,13 +18,12 @@ func RegisterHeaderRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, regist
 	headerGroup := e.Router.Group("/header", middleware.LoadAuthContextFromCookie(app))
 
 	headerGroup.GET("/loginstate", func(c echo.Context) error {
-		userRecord := c.Get(apis.ContextAuthRecordKey)
-		if userRecord == nil {
+		user, err := lib.GetUserRecord(c)
+		if err != nil {
 			return c.File("views/components/header/login.html")
 		}
 		app.Logger().Debug("Found user, displaying info")
 
-		var user *models.Record = userRecord.(*models.Record)
 		var props = map[string]any{}
 
 		name := user.GetString("name")

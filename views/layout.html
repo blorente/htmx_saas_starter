@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html data-theme="coffee">
+<html>
 
 <head>
   <title>{{block "title" . }}Super Awesome App{{end}}</title>
-  <link href="/styles.css" rel="stylesheet" />
+  <!-- <link href="/styles.css" rel="stylesheet" /> -->
+  <link href="/css/pico.min.css" rel="stylesheet" />
+  <link href="/css/styles.css" rel="stylesheet" />
   <script src="https://unpkg.com/htmx.org"></script>
   {{if .needs_pocketbase}}
   <script src="/js/pocketbase.umd.js"></script>
@@ -14,14 +16,17 @@
 </head>
 
 <body>
-  <header id="header" hx-get="/components/header" hx-trigger="load" class="w-full" hx-swap="outerHTML">
+  <header id="header" class="container-fluid" hx-get="/components/header" hx-trigger="load" hx-swap="outerHTML">
     This is a stub, will be replaced by htmx when it's done loading the header.
   </header>
-  <main id="body" class="flex mt-16">
+  <main id="body" class="container-fluid">
     {{block "body" .}}
     <p>This body is empty</p>
     {{end}}
   </main>
+  <footer class="container-fluid">
+    This is the footer
+  </footer>
 </body>
 
 </html>

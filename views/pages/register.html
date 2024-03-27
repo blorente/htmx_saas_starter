@@ -3,18 +3,13 @@ Register
 {{end}}
 
 {{define "body"}}
-<div class="hero">
-  <div class="hero-content min-w-96">
-    <div class="grid gap-2">
+<section class="container-xsmall">
+  <div hx-get="/registration/form" hx-trigger="load" hx-swap="innerHTML" />
 
-      <div hx-get="/registration/form" hx-trigger="load" hx-swap="innerHTML" />
+  <div class="divider">OR</div>
 
-      <div class="divider">OR</div>
-
-      <div class="grid">
-        <div hx-trigger="load" hx-get="/auth/oauth-login/google" hx-swap="outerHTML" />
-      </div>
-    </div>
+  <div class="grid">
+    <div hx-trigger="load" hx-get="/auth/oauth-login/google" hx-swap="outerHTML" />
   </div>
-</div>
+</section>
 {{end}}

@@ -1,0 +1,17 @@
+.container-small {
+  max-width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: auto;
+  padding-right: auto;
+  justify-content: center;
+}
+
+.container-xsmall {
+  max-width: 25rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: auto;
+  padding-right: auto;
+  justify-content: center;
+}

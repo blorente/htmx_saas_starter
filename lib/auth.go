@@ -8,6 +8,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tokens"
@@ -109,4 +110,13 @@ func RegisterNewUser(app *pocketbase.PocketBase, req *RegisterNewUserRequest) (*
 		return nil, err
 	}
 	return newUserRecord, nil
+}
+
+func GetUserRecord(c echo.Context) (*models.Record, error) {
+	info := apis.RequestInfo(c)
+	userRecord := info.AuthRecord
+	if userRecord == nil {
+		return nil, fmt.Errorf("User not authenticated")
+	}
+	return userRecord, nil
 }

@@ -8,21 +8,11 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/tools/template"
 
 	"github.com/blorente/htmx_saas_starter/lib"
 	"github.com/blorente/htmx_saas_starter/middleware"
 )
-
-func getUserRecord(c echo.Context) (*models.Record, error) {
-	info := apis.RequestInfo(c)
-	userRecord := info.AuthRecord
-	if userRecord == nil {
-		return nil, fmt.Errorf("User not authenticated")
-	}
-	return userRecord, nil
-}
 
 type AuthProvider struct {
 	Name        string
@@ -42,7 +32,7 @@ var AuthProviders = map[string]AuthProvider{
 func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
 	authGroup.GET("/login", func(c echo.Context) error {
-		_, err := getUserRecord(c)
+		_, err := lib.GetUserRecord(c)
 		if err == nil {
 			app.Logger().Debug("User found. Redirecting")
 			return c.Redirect(302, "/")

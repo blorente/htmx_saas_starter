@@ -19,7 +19,7 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 	group := e.Router.Group("/registration", middleware.LoadAuthContextFromCookie(app))
 
 	group.GET("/register", func(c echo.Context) error {
-		_, err := getUserRecord(c)
+		_, err := lib.GetUserRecord(c)
 		if err == nil {
 			app.Logger().Debug("User found. Redirecting")
 			return c.Redirect(302, "/")
