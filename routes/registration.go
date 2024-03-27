@@ -77,6 +77,67 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 		})
 		return c.Redirect(302, "/")
 	})
+
+	group.POST("/validate-username", func(c echo.Context) error {
+		app.Logger().Debug("BL: /validate-username")
+		username := c.FormValue("username")
+		err := lib.ValidateUsername(app, username)
+		app.Logger().Debug("BL: Error is ", err)
+		html, err := registry.LoadFiles(
+			"views/components/registration/username.html",
+		).Render(map[string]any{"error": err, "value": username})
+		if err != nil {
+			app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
+			return apis.NewNotFoundError("Error rendering template", err)
+		}
+		return c.HTML(http.StatusOK, html)
+	})
+
+	group.POST("/validate-email", func(c echo.Context) error {
+		app.Logger().Debug(fmt.Sprintf("BL: /validate-email, ctx is %#v", c))
+		email := c.FormValue("email")
+		app.Logger().Debug(fmt.Sprintf("BL: /validate-email, email is %#v", email))
+		err := lib.ValidateEmail(app, email)
+		app.Logger().Debug(fmt.Sprintf("BL: Error is %s", err))
+		html, err := registry.LoadFiles(
+			"views/components/registration/email.html",
+		).Render(map[string]any{"error": err, "value": email})
+		if err != nil {
+			app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
+			return apis.NewNotFoundError("Error rendering template", err)
+		}
+		return c.HTML(http.StatusOK, html)
+	})
+
+	group.POST("/validate-password", func(c echo.Context) error {
+		app.Logger().Debug(fmt.Sprintf("BL: /validate-password, ctx is %#v", c))
+		password := c.FormValue("password")
+		repeatPassword := c.FormValue("repeat-password")
+		err := lib.ValidatePassword(app, password, repeatPassword)
+		app.Logger().Debug(fmt.Sprintf("BL: Error is %s", err))
+		html, err := registry.LoadFiles(
+			"views/components/registration/password.html",
+		).Render(map[string]any{"error": err, "password": password, "repeat_password": repeatPassword})
+		if err != nil {
+			app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
+			return apis.NewNotFoundError("Error rendering template", err)
+		}
+		return c.HTML(http.StatusOK, html)
+	})
+
+	for _, formComponent := range []string{"email", "username", "password"} {
+		group.GET(fmt.Sprintf("/%s", formComponent), func(c echo.Context) error {
+			html, err := registry.LoadFiles(
+				fmt.Sprintf("views/components/registration/%s.html", formComponent),
+			).Render(nil)
+			if err != nil {
+				app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
+				return apis.NewNotFoundError("Error rendering template", err)
+			}
+			return c.HTML(http.StatusOK, html)
+		})
+	}
+
 }
 
 func renderFormTemplate(inErr *error, registry *template.Registry) (string, error) {

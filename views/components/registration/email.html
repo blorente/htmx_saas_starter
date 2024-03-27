@@ -1,0 +1,10 @@
+<label hx-target="this" hx-swap="outerHTML">
+  Email
+  <input name="email" type="text" hx-post="/registration/validate-email" placeholder="Email" {{ if .error}}
+    aria-invalid="true" aria-describedby="email-invalid-helper" {{ end }} value="{{.value}}" />
+  {{ if .error}}
+  <small id="email-invalid-helper">
+    {{.error}}
+  </small>
+  {{end}}
+</label>

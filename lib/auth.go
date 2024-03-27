@@ -1,6 +1,6 @@
 package lib
 
-// Copied wholesale from https://github.com/gobeli/pocketbase-htmx/blob/main/lib/auth.go
+// Adapted from https://github.com/gobeli/pocketbase-htmx/blob/main/lib/auth.go
 
 import (
 	"fmt"
@@ -52,22 +52,49 @@ func NewRegisterUserRequestFromContext(c echo.Context) RegisterNewUserRequest {
 }
 
 func (r *RegisterNewUserRequest) Validate(app *pocketbase.PocketBase) error {
+	var err error
 
 	app.Logger().Debug(fmt.Sprintf("BL: Validating request %v", r))
-	if r.Password != r.RetypePassword {
+
+	if err = ValidatePassword(app, r.Password, r.RetypePassword); err != nil {
+		return err
+	}
+
+	if err = ValidateEmail(app, r.Email); err != nil {
+		return err
+	}
+
+	if err = ValidateUsername(app, r.Username); err != nil {
+		return err
+	}
+	return nil
+}
+
+func ValidatePassword(app *pocketbase.PocketBase, password string, retype string) error {
+	if password != retype {
 		return fmt.Errorf("Passwords do not match")
 	}
-	parsedEmail, err := mail.ParseAddress(r.Email)
-	if err != nil || parsedEmail.Address != r.Email {
-		return fmt.Errorf("Email is not a valid email address")
-	}
-	_, err = app.Dao().FindFirstRecordByData("users", "email", r.Email)
-	if err == nil {
-		return fmt.Errorf("Email is already taken")
-	}
-	_, err = app.Dao().FindFirstRecordByData("users", "username", r.Username)
+	return nil
+}
+
+func ValidateUsername(app *pocketbase.PocketBase, username string) error {
+	_, err := app.Dao().FindFirstRecordByData("users", "username", username)
 	if err == nil {
 		return fmt.Errorf("Username is already taken")
+	}
+	return nil
+}
+
+func ValidateEmail(app *pocketbase.PocketBase, email string) error {
+	parsedEmail, err := mail.ParseAddress(email)
+	fmt.Println("BL: Parsed email is %#v, err is %s", parsedEmail, err)
+	if err != nil || parsedEmail.Address != email {
+		fmt.Println("BL: err is %s", parsedEmail, err)
+		return fmt.Errorf("Email is not a valid email address")
+	}
+	_, err = app.Dao().FindFirstRecordByData("users", "email", email)
+	if err == nil {
+		return fmt.Errorf("Email is already taken")
 	}
 	return nil
 }

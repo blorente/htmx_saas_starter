@@ -1,30 +1,15 @@
 <form hx-post="/registration/register" hx-boost="true">
-  {{if .error}}
-  <div role="alert" class="alert alert-error max-w-96">
-    <span>Registration error: {{.error}}</span>
-  </div>
-  {{end}}
   <fieldset>
-    <label>
-      Username
-      <input name="username" type="text" class="grow" placeholder="Username" />
-    </label>
+    <div hx-get="/registration/username" hx-trigger="load">
+    </div>
+    <div hx-get="/registration/email" hx-trigger="load">
+    </div>
     <label class="input input-bordered flex items-center gap-2">
       Name
       <input name="name" type="text" class="grow" placeholder="Name" />
     </label>
-    <label class="input input-bordered flex items-center gap-2">
-      Email
-      <input name="email" type="text" class="grow" placeholder="Email" />
-    </label>
-    <label class="input input-bordered flex items-center gap-2">
-      Password
-      <input name="password" type="password" class="grow" placeholder="Password" />
-    </label>
-    <label class="input input-bordered flex items-center gap-2">
-      Repeat Password
-      <input name="repeat-password" type="password" class="grow" placeholder="Repeat Password" />
-    </label>
+    <div hx-get="/registration/password" hx-trigger="load">
+    </div>
   </fieldset>
   <input type="submit" value="Create account" />
 </form>

@@ -1,21 +1,20 @@
-<div tabindex="0" role="button" class="flex flex-row-reverse items-center gap-6">
-  <div class="btn btn-ghost btn-circle avatar ring hover:ring-primary">
-    <div class="w-10 rounded-full">
-      {{if .avatar}}
-      <img alt="Profile picture" src="{{.avatar}}" />
-      {{else}}
-      <span class="text-xl  text-neutral-content">??</span>
-      {{end}}
-    </div>
+<div class="user-info">
+  <div class="user-info-avatar">
+    {{if .avatar}}
+    <img alt="Profile picture" src="{{.avatar}}" />
+    {{else}}
+    <span class="text-xl  text-neutral-content">??</span>
+    {{end}}
   </div>
-  <div class="grid">
-    <a href="/app/profile" class="hover:link hover:bg-base-200">
-      Welcome, <span class="font-bold">
+  <div class="user-info-welcome">
+    Welcome,
+    <a href="/app/profile">
+      <strong>
         {{.name}}
-      </span>
+      </strong>
     </a>
-    <form class="flex justify-end" action="/auth/logout" method="post">
-      <button name="logout" class=" btn-xs btn-ghost">Logout</button>
-    </form>
+  </div>
+  <div class="user-info-logout">
+    <a href="/auth/logout" hx-post="/auth/logout" hx-target="body">Logout</a>
   </div>
 </div>

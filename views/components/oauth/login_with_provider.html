@@ -21,8 +21,8 @@
     location.reload()
   }
 </script>
-<div style="position: relative;">
-  <img src="{{.LogoRoute}}" alt="Log in with {{.DisplayName}}" style="position: absolute; top:0.6em; left: 1em;" />
+<div class="login-provider-button">
+  <img src="{{.LogoRoute}}" alt="Log in with {{.DisplayName}}" class="login-provider-logo" />
   <input type="submit" value="Log in with {{.DisplayName}}" hx-on:click="loginWithProvider()"
     style="padding-left: 1em;">
   </input>
