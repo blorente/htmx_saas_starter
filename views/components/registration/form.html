@@ -1,4 +1,12 @@
 <form hx-post="/registration/register" hx-boost="true" hx-swap="innerHTML">
+  {{ if .error}}
+  <article id="login-error-helper" class="login-error">
+    <strong>
+      Registration error:
+    </strong>
+    {{.error}}
+  </article>
+  {{end}}
   <fieldset>
     <div hx-get="/registration/username" hx-trigger="load">
     </div>

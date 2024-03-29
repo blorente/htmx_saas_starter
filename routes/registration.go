@@ -2,13 +2,11 @@ package routes
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/blorente/htmx_saas_starter/lib"
 	"github.com/blorente/htmx_saas_starter/middleware"
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/template"
 )
@@ -34,30 +32,18 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 	})
 
 	group.GET("/form", func(c echo.Context) error {
-		html, err := renderFormTemplate(nil, registry)
-		if err != nil {
-			return err
-		}
-		return c.HTML(http.StatusOK, html)
+		return renderRegistrationForm(c, registry, nil)
 	})
 
 	group.POST("/register", func(c echo.Context) error {
 		request := lib.NewRegisterUserRequestFromContext(c)
 		err := request.Validate(app)
 		if err != nil {
-			html, err := renderFormTemplate(&err, registry)
-			if err != nil {
-				return err
-			}
-			return c.HTML(http.StatusOK, html)
+			return renderRegistrationForm(c, registry, &err)
 		}
 		_, err = lib.RegisterNewUser(app, &request)
 		if err != nil {
-			html, err := renderFormTemplate(&err, registry)
-			if err != nil {
-				return err
-			}
-			return c.HTML(http.StatusOK, html)
+			return renderRegistrationForm(c, registry, &err)
 		}
 
 		token, err := lib.LoginWithUsernameAndPassword(e, request.Username, request.Password)
@@ -105,17 +91,13 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 	}
 }
 
-func renderFormTemplate(inErr *error, registry *template.Registry) (string, error) {
+func renderRegistrationForm(c echo.Context, registry *template.Registry, inErr *error) error {
 	props := make(map[string]any)
 
 	if inErr != nil {
 		props["error"] = fmt.Sprintf("%s", *inErr)
 	}
-	html, err := registry.LoadFiles(
+	return lib.RenderTemplate(c, registry, props,
 		"views/components/registration/form.html",
-	).Render(props)
-	if err != nil {
-		return "", apis.NewNotFoundError("Error rendering template", err)
-	}
-	return html, err
+	)
 }
