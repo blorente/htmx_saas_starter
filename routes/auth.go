@@ -31,7 +31,7 @@ var AuthProviders = map[string]AuthProvider{
 // RegisterAuthRoutes registers the route group '/auth', which handles authentication.
 func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
-	authGroup.File("/login-form", "views/components/login/form.html")
+	authGroup.File("/login-form", "views/components/auth/login.html")
 
 	authGroup.GET("/login", func(c echo.Context) error {
 		_, err := lib.GetUserRecord(c)
@@ -49,26 +49,11 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		}
 		return c.HTML(http.StatusOK, html)
 	})
-	authGroup.GET("/login", func(c echo.Context) error {
-		_, err := lib.GetUserRecord(c)
-		if err == nil {
-			app.Logger().Debug("User found. Redirecting")
-			return lib.NonHtmxRedirectToIndex(c)
-		}
-		html, err := registry.LoadFiles(
-			"views/pages/login.html",
-		).Render(nil)
-		if err != nil {
-			app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
-			return apis.NewNotFoundError("Error rendering template", err)
-		}
-		return c.HTML(http.StatusOK, html)
-	})
 
 	authGroup.GET("/oauth-login/:provider", func(c echo.Context) error {
 		provider := c.PathParams().Get("provider", "google")
 		html, err := registry.LoadFiles(
-			"views/components/oauth/login_with_provider.html",
+			"views/components/auth/login_with_provider.html",
 		).Render(AuthProviders[provider])
 		if err != nil {
 			app.Logger().Error("Error rendering template", err)
@@ -81,7 +66,6 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		app.Logger().Debug("Logging in: ", username)
-		// TODO Actually log the user in, this just assumes it's in the DB
 		token, err := lib.LoginWithUsernameAndPassword(e, username, password)
 		if err != nil {
 			app.Logger().Debug(fmt.Sprintf("Error logging in %s", err))
@@ -89,7 +73,6 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		}
 		lib.SetAuthCookie(c, *token)
 		return lib.HtmxRedirectToIndex(c)
-		// return c.Redirect(302, "/")
 	})
 
 	authGroup.POST("/logout", func(c echo.Context) error {
@@ -106,6 +89,20 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		})
 		return lib.HtmxRedirectToIndex(c)
 	})
+
+	for _, formComponent := range []string{"username", "password"} {
+		authGroup.GET(fmt.Sprintf("/%s", formComponent), func(c echo.Context) error {
+			html, err := registry.LoadFiles(
+				fmt.Sprintf("views/components/auth/%s.html", formComponent),
+			).Render(nil)
+			if err != nil {
+				app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
+				return apis.NewNotFoundError("Error rendering template", err)
+			}
+			return c.HTML(http.StatusOK, html)
+		})
+	}
+
 }
 
 // AuthRequestCallback will fire for every auth collection request.

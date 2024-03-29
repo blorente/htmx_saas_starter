@@ -1,10 +1,10 @@
 <form hx-post="/auth/login" hx-boost="true" hx-swap="outerHTML">
   <fieldset>
-    <label class="input input-bordered flex items-center gap-2">
+    <label>
       Username
-      <input name="username" type="text" class="grow" placeholder="Username" />
+      <input name="username" type="text" placeholder="Username" />
     </label>
-    <label class="input input-bordered flex items-center gap-2">
+    <label>
       Password
       <input name="password" type="password" placeholder="Password" />
     </label>
@@ -14,7 +14,3 @@
     <a href="/registration/register" class="link">Register Here</a>
   </p>
 </form>
-
-<div class="grid">
-  <div hx-trigger="load" hx-get="/auth/oauth-login/google" hx-swap="outerHTML" />
-</div>

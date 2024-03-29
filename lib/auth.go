@@ -19,17 +19,17 @@ import (
 func LoginWithUsernameAndPassword(e *core.ServeEvent, username string, password string) (*string, error) {
 	user, err := e.App.Dao().FindAuthRecordByUsername("users", username)
 	if err != nil {
-		return nil, fmt.Errorf("Login failed")
+		return nil, fmt.Errorf("User not found")
 	}
 
 	valid := user.ValidatePassword(password)
 	if !valid {
-		return nil, fmt.Errorf("Login failed")
+		return nil, fmt.Errorf("Password does not match the user")
 	}
 
 	s, tokenErr := tokens.NewRecordAuthToken(e.App, user)
 	if tokenErr != nil {
-		return nil, fmt.Errorf("Login failed")
+		return nil, fmt.Errorf("Error generating user token")
 	}
 
 	return &s, nil
