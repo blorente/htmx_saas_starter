@@ -1,0 +1,20 @@
+<form hx-post="/auth/login" hx-boost="true" hx-swap="outerHTML">
+  <fieldset>
+    <label class="input input-bordered flex items-center gap-2">
+      Username
+      <input name="username" type="text" class="grow" placeholder="Username" />
+    </label>
+    <label class="input input-bordered flex items-center gap-2">
+      Password
+      <input name="password" type="password" placeholder="Password" />
+    </label>
+  </fieldset>
+  <input type="submit" value="Log in with credential" />
+  <p>Don't have an account?
+    <a href="/registration/register" class="link">Register Here</a>
+  </p>
+</form>
+
+<div class="grid">
+  <div hx-trigger="load" hx-get="/auth/oauth-login/google" hx-swap="outerHTML" />
+</div>

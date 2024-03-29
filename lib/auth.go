@@ -4,8 +4,10 @@ package lib
 
 import (
 	"fmt"
+	"net/http"
 	"net/mail"
 
+	"github.com/blorente/htmx_saas_starter/middleware"
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
@@ -146,4 +148,15 @@ func GetUserRecord(c echo.Context) (*models.Record, error) {
 		return nil, fmt.Errorf("User not authenticated")
 	}
 	return userRecord, nil
+}
+
+func SetAuthCookie(c echo.Context, token string) {
+	c.SetCookie(&http.Cookie{
+		Name:     middleware.AuthCookieName,
+		Value:    token,
+		Path:     "/",
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: true,
+	})
 }

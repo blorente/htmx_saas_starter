@@ -1,20 +1,24 @@
-<div class="user-info">
-  <div class="user-info-avatar">
-    {{if .avatar}}
-    <img alt="Profile picture" src="{{.avatar}}" />
-    {{else}}
-    <span class="text-xl  text-neutral-content">??</span>
-    {{end}}
-  </div>
-  <div class="user-info-welcome">
-    Welcome,
-    <a href="/app/profile">
-      <strong>
-        {{.name}}
-      </strong>
-    </a>
-  </div>
-  <div class="user-info-logout">
-    <a href="/auth/logout" hx-post="/auth/logout" hx-target="body">Logout</a>
-  </div>
-</div>
+<ul>
+  <li>
+    <div class="user-info">
+      <div class="user-info-avatar">
+        {{if .avatar}}
+        <img alt="Profile picture" src="{{.avatar}}" />
+        {{else}}
+        <span class="text-xl  text-neutral-content">??</span>
+        {{end}}
+      </div>
+      <div class="user-info-welcome">
+        Welcome,
+        <a href="/app/profile">
+          <strong>
+            {{.name}}
+          </strong>
+        </a>
+      </div>
+      <div class="user-info-logout">
+        <a href="/auth/logout" hx-post="/auth/logout" hx-target="body">Logout</a>
+      </div>
+    </div>
+  </li>
+</ul>

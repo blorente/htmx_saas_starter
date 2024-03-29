@@ -4,22 +4,10 @@ Login
 
 {{define "body"}}
 <section class="container-xsmall">
-  <form method="post" action="/auth/login" hx-boost="true">
-    <fieldset>
-      <label class="input input-bordered flex items-center gap-2">
-        Username
-        <input name="username" type="text" class="grow" placeholder="Username" />
-      </label>
-      <label class="input input-bordered flex items-center gap-2">
-        Password
-        <input name="password" type="password" placeholder="Password" />
-      </label>
-    </fieldset>
-    <input type="submit" value="Log in with credential" />
-    <p>Don't have an account?
-      <a href="/registration/register" class="link">Register Here</a>
-    </p>
-  </form>
+  <div hx-get="/auth/login-form" hx-trigger="load" hx-swap="innerHTML">
+  </div>
+
+  <div class="divider">OR</div>
 
   <div class="grid">
     <div hx-trigger="load" hx-get="/auth/oauth-login/google" hx-swap="outerHTML" />

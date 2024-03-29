@@ -22,7 +22,7 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 		_, err := lib.GetUserRecord(c)
 		if err == nil {
 			app.Logger().Debug("User found. Redirecting")
-			return c.Redirect(302, "/")
+			return lib.HtmxRedirectToIndex(c)
 		}
 		html, err := registry.LoadFiles(
 			"views/layout.html",
@@ -66,16 +66,10 @@ func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, 
 
 		token, err := lib.LoginWithUsernameAndPassword(e, request.Username, request.Password)
 		if err != nil {
-			return c.Redirect(302, "/")
+			return lib.HtmxRedirectToIndex(c)
 		}
-		c.SetCookie(&http.Cookie{
-			Name:     middleware.AuthCookieName,
-			Value:    *token,
-			Path:     "/",
-			Secure:   true,
-			HttpOnly: true,
-		})
-		return c.Redirect(302, "/")
+		lib.SetAuthCookie(c, *token)
+		return lib.HtmxRedirectToIndex(c)
 	})
 
 	group.POST("/validate-username", func(c echo.Context) error {

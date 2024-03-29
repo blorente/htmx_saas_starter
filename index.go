@@ -23,7 +23,6 @@ func main() {
 
 		// Static HTML
 		e.Router.Static("/*", "public")
-		e.Router.File("/components/header", "views/components/layout/header.html")
 		e.Router.GET("/", func(c echo.Context) error {
 			return c.Redirect(302, "/landing")
 		})

@@ -58,3 +58,11 @@
 .user-info-logout {
   grid-area: logout;
 }
+
+.divider {
+  display: flex;
+  justify-content: center;
+  font-style: italic;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}

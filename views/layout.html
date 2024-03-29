@@ -3,7 +3,6 @@
 
 <head>
   <title>{{block "title" . }}Super Awesome App{{end}}</title>
-  <!-- <link href="/styles.css" rel="stylesheet" /> -->
   <link href="/css/pico.min.css" rel="stylesheet" />
   <link href="/css/styles.css" rel="stylesheet" />
   <script src="https://unpkg.com/htmx.org"></script>
@@ -16,15 +15,27 @@
 </head>
 
 <body>
-  <header id="header" class="container-fluid" hx-get="/components/header" hx-trigger="load" hx-swap="outerHTML">
-    This is a stub, will be replaced by htmx when it's done loading the header.
+  <header class="container">
+    <nav>
+      <ul>
+        <li>
+          <h3><strong>Fantasticapp</strong></h3>
+        </li>
+        <li />
+        <li />
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Wall of Love</a></li>
+      </ul>
+      <div hx-get="/header/loginstate" hx-swap="outerHTML" hx-trigger="load" />
+    </nav>
   </header>
   <main id="body" class="container-fluid">
     {{block "body" .}}
     <p>This body is empty</p>
     {{end}}
   </main>
-  <footer class="container-fluid">
+  <footer id="footer" class="container-fluid">
     This is the footer
   </footer>
 </body>
