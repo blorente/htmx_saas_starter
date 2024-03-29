@@ -17,8 +17,7 @@ func RegisterHeaderRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, regist
 	headerGroup.GET("/loginstate", func(c echo.Context) error {
 		user, err := lib.GetUserRecord(c)
 		if err != nil {
-			// app.Logger().Debug(fmt.Sprintf("BL: User not found for context %v. Redirecting", c))
-			return c.File("views/components/header/login.html")
+			return c.File("views/components/header/login_links.html")
 		}
 		app.Logger().Debug("Found user, displaying info")
 
