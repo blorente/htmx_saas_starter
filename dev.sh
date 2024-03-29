@@ -11,11 +11,6 @@ cleanup() {
 
 air -c air.toml &
 AIR_PID=$!
-npx tailwindcss \
-  -i 'styles.css' \
-  -o 'public/styles.css' \
-  --watch &
-
 trap cleanup EXIT SIGINT SIGTERM
 
 clean_port
