@@ -30,7 +30,9 @@ var AuthProviders = map[string]AuthProvider{
 // RegisterAuthRoutes registers the route group '/auth', which handles authentication.
 func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
-	authGroup.File("/login-form", "views/components/auth/login.html")
+	authGroup.GET("/login-form", func(c echo.Context) error {
+		return renderLoginForm(c, registry, nil)
+	})
 
 	authGroup.GET("/login", func(c echo.Context) error {
 		_, err := lib.GetUserRecord(c)
@@ -38,7 +40,7 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 			app.Logger().Debug("User found. Redirecting")
 			return lib.NonHtmxRedirectToIndex(c)
 		}
-		return lib.RenderTemplate(c, registry, nil,
+		return lib.RenderTemplate(c, registry, map[string]any{"needs_pocketbase": true},
 			"views/layout.html",
 			"views/pages/login.html",
 		)
@@ -57,8 +59,7 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 		app.Logger().Debug("Logging in: ", username)
 		token, err := lib.LoginWithUsernameAndPassword(e, username, password)
 		if err != nil {
-			app.Logger().Debug(fmt.Sprintf("Error logging in %s", err))
-			c.Redirect(302, "/auth/login")
+			return renderLoginForm(c, registry, &err)
 		}
 		lib.SetAuthCookie(c, *token)
 		return lib.HtmxRedirectToIndex(c)
@@ -76,7 +77,7 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 			SameSite: http.SameSiteLaxMode,
 			MaxAge:   -1,
 		})
-		return lib.HtmxRedirectToIndex(c)
+		return lib.NonHtmxRedirectToIndex(c)
 	})
 
 	for _, formComponent := range []string{"username", "password"} {
@@ -93,4 +94,16 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 func AuthRequestCallback(e *core.RecordAuthEvent) error {
 	lib.SetAuthCookie(e.HttpContext, e.Token)
 	return nil
+}
+
+func renderLoginForm(c echo.Context, registry *template.Registry, inErr *error) error {
+	props := make(map[string]any)
+
+	if inErr != nil {
+		props["error"] = fmt.Sprintf("%s", *inErr)
+	}
+
+	return lib.RenderTemplate(c, registry, props,
+		"views/components/auth/login.html",
+	)
 }

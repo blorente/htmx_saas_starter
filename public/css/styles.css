@@ -66,3 +66,7 @@
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
+
+.login-error {
+  color: var(--pico-form-element-invalid-focus-color);
+}
