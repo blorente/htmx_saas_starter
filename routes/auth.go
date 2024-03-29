@@ -6,7 +6,6 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/template"
 
@@ -39,27 +38,17 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 			app.Logger().Debug("User found. Redirecting")
 			return lib.NonHtmxRedirectToIndex(c)
 		}
-		html, err := registry.LoadFiles(
+		return lib.RenderTemplate(c, registry, nil,
 			"views/layout.html",
 			"views/pages/login.html",
-		).Render(nil)
-		if err != nil {
-			app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
-			return apis.NewNotFoundError("Error rendering template", err)
-		}
-		return c.HTML(http.StatusOK, html)
+		)
 	})
 
 	authGroup.GET("/oauth-login/:provider", func(c echo.Context) error {
 		provider := c.PathParams().Get("provider", "google")
-		html, err := registry.LoadFiles(
+		return lib.RenderTemplate(c, registry, AuthProviders[provider],
 			"views/components/auth/login_with_provider.html",
-		).Render(AuthProviders[provider])
-		if err != nil {
-			app.Logger().Error("Error rendering template", err)
-			return apis.NewNotFoundError("", err)
-		}
-		return c.HTML(http.StatusOK, html)
+		)
 	})
 
 	authGroup.POST("/login", func(c echo.Context) error {
@@ -92,17 +81,11 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 
 	for _, formComponent := range []string{"username", "password"} {
 		authGroup.GET(fmt.Sprintf("/%s", formComponent), func(c echo.Context) error {
-			html, err := registry.LoadFiles(
+			return lib.RenderTemplate(c, registry, nil,
 				fmt.Sprintf("views/components/auth/%s.html", formComponent),
-			).Render(nil)
-			if err != nil {
-				app.Logger().Error(fmt.Sprintf("Error rendering template: %s", err))
-				return apis.NewNotFoundError("Error rendering template", err)
-			}
-			return c.HTML(http.StatusOK, html)
+			)
 		})
 	}
-
 }
 
 // AuthRequestCallback will fire for every auth collection request.
