@@ -1,11 +1,8 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tools/template"
 
@@ -38,14 +35,8 @@ func RegisterHeaderRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, regist
 			props["avatar"] = avatar
 		}
 
-		html, err := registry.LoadFiles(
+		return lib.RenderTemplate(c, registry, props,
 			"views/components/header/user_info.html",
-		).Render(props)
-
-		if err != nil {
-			return apis.NewNotFoundError("", err)
-		}
-
-		return c.HTML(http.StatusOK, html)
+		)
 	})
 }
