@@ -15,8 +15,16 @@ import (
 func main() {
 	app := pocketbase.New()
 
+	configPath := "config.yaml"
+
 	// serves static files from the provided public dir (if exists)
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+		config, err := lib.NewConfigFromFile(configPath)
+		log.Printf("Parsing config from %s", configPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		config.InitSettings(app)
 
 		registry := template.NewRegistry()
 
@@ -27,14 +35,14 @@ func main() {
 		})
 
 		e.Router.GET("/landing", func(c echo.Context) error {
-			return lib.RenderTemplate(c, registry, nil,
+			return lib.RenderTemplate(c, registry, map[string]any{"Config": config},
 				"views/layout.html",
 				"views/pages/landing.html",
 			)
 		})
 
-		routes.RegisterAuthRoutes(app, e, registry)
-		routes.RegisterRegistrationRoutes(app, e, registry)
+		routes.RegisterAuthRoutes(app, e, registry, *config)
+		routes.RegisterRegistrationRoutes(app, e, registry, *config)
 		routes.RegisterAppRoutes(app, e)
 		routes.RegisterHeaderRoutes(app, e, registry)
 		return nil

@@ -15,6 +15,9 @@ func RegisterHeaderRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, regist
 	headerGroup := e.Router.Group("/header", middleware.LoadAuthContextFromCookie(app))
 
 	headerGroup.GET("/loginstate", func(c echo.Context) error {
+
+		lib.NoCacheResponse(c)
+
 		user, err := lib.GetUserRecord(c)
 		if err != nil {
 			return c.File("views/components/header/login_links.html")

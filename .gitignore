@@ -2,3 +2,5 @@ node_modules
 tmp
 bin
 .env
+config.yaml
+pd_data

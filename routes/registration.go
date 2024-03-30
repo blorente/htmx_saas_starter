@@ -13,17 +13,17 @@ import (
 
 // RegisterRegistraitionRoutes registers the route group '/registration', which handles showing and validating the registration form,
 // as well as performing the actual registration.
-func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
+func RegisterRegistrationRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry, config lib.Config) {
 	group := e.Router.Group("/registration", middleware.LoadAuthContextFromCookie(app))
 
 	group.GET("/register", func(c echo.Context) error {
 		_, err := lib.GetUserRecord(c)
 		if err == nil {
-			app.Logger().Debug("User found. Redirecting")
-			return lib.HtmxRedirectToIndex(c)
+			return lib.NonHtmxRedirectToIndex(c)
 		}
 		return lib.RenderTemplate(c, registry,
 			map[string]any{
+				"Config":           config,
 				"needs_pocketbase": true,
 			},
 			"views/layout.html",

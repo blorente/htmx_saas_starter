@@ -5,11 +5,11 @@
   <title>{{block "title" . }}Super Awesome App{{end}}</title>
   <link href="/css/pico.min.css" rel="stylesheet" />
   <link href="/css/styles.css" rel="stylesheet" />
-  <script src="/js/htmx.min.js"></script>
+  <script src="/js/htmx.min.js" type="text/javascript"></script>
   {{if .needs_pocketbase}}
-  <script src="/js/pocketbase.umd.js"></script>
+  <script src="/js/pocketbase.umd.js" type="text/javascript"></script>
   <script type="text/javascript">
-    const pb = new PocketBase("http://localhost:9999");
+    const pb = new PocketBase("{{.Config.AppUrl}}");
   </script>
   {{end}}
 </head>
@@ -19,7 +19,7 @@
     <nav>
       <ul>
         <li>
-          <h3 hx-get="/" hx-target="body"><strong>Fantasticapp</strong></h3>
+          <h3 hx-get="/" hx-target="body"><strong>{{.Config.AppName}}</strong></h3>
         </li>
         <li />
         <li />

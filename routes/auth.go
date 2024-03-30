@@ -28,7 +28,7 @@ var AuthProviders = map[string]AuthProvider{
 }
 
 // RegisterAuthRoutes registers the route group '/auth', which handles authentication.
-func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry) {
+func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry *template.Registry, config lib.Config) {
 	authGroup := e.Router.Group("/auth", middleware.LoadAuthContextFromCookie(app))
 	authGroup.GET("/login-form", func(c echo.Context) error {
 		return renderLoginForm(c, registry, nil)
@@ -40,7 +40,7 @@ func RegisterAuthRoutes(app *pocketbase.PocketBase, e *core.ServeEvent, registry
 			app.Logger().Debug("User found. Redirecting")
 			return lib.NonHtmxRedirectToIndex(c)
 		}
-		return lib.RenderTemplate(c, registry, map[string]any{"needs_pocketbase": true},
+		return lib.RenderTemplate(c, registry, map[string]any{"Config": config, "needs_pocketbase": true},
 			"views/layout.html",
 			"views/pages/login.html",
 		)
